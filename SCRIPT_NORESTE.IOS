@@ -68,8 +68,6 @@ no switchport
 ip add 148.60.101.10 255.255.255.252
 no shut
 
-enable
-configure terminal
 vtp mode server
 vtp domain juanmark.com
 
@@ -99,8 +97,6 @@ no shut
 
 interface vlan 100
 ip add 148.60.100.1 255.255.255.0
-
-
 
 ! MS3
 enable
@@ -153,10 +149,10 @@ interface range Gig1/0/1-6
 switchport mode access
 switchport access vlan 97
 interface range Gig1/0/7-12
-switchport modo access
-switchport access vlna 98
+switchport mode access
+switchport access vlan 98
 interface range Gig1/0/13-18
-switchport modo access
+switchport mode access
 switchport access vlan 99
 interface range Gig1/0/19-24
 
