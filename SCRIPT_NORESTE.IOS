@@ -46,14 +46,28 @@ enable
 config t
 vtp mode client
 
+
+interface g1/0/1
+switchport nonegotiate
+switchport mode trunk 
+switchport trunk allowed vlan 97,98,99,100
 interface g1/0/3
+switchport nonegotiate
 switchport mode trunk 
 switchport trunk allowed vlan 97,98,99,100
 interface g1/0/2
+switchport nonegotiate
 switchport mode trunk 
 switchport trunk allowed vlan 97,98,99,100
 
 ! MS2
+enable
+config terminal
+interface g1/0/1
+no switchport
+ip add 148.60.101.10 255.255.255.252
+no shut
+
 enable
 configure terminal
 vtp mode server
@@ -61,9 +75,11 @@ vtp domain juanmark.com
 
 
 interface g1/0/2
+switchport nonegotiate
 switchport mode trunk 
 switchport trunk allowed vlan 97,98,99,100
 interface g1/0/3
+switchport nonegotiate
 switchport mode trunk 
 switchport trunk allowed vlan 97,98,99,100
 
@@ -91,22 +107,31 @@ enable
 configure terminal
 vtp mode client
 
-
+interface g1/0/1
+switchport nonegotiate
+switchport mode trunk 
+switchport trunk allowed vlan 97,98,99,100
 interface g1/0/2
+switchport nonegotiate
 switchport mode trunk 
 switchport trunk allowed vlan 97,98,99,100
 interface g1/0/3
+switchport nonegotiate
 switchport mode trunk 
 switchport trunk allowed vlan 97,98,99, 
+
+
 ! MS4 
 enable
 configure terminal
 vtp mode client
 
 interface g1/0/1
+switchport nonegotiate
 switchport mode trunk 
 switchport trunk allowed vlan 97,98,99,100
 interface g1/0/2
+switchport nonegotiate
 switchport mode trunk 
 switchport trunk allowed vlan 97,98,99,100
 
