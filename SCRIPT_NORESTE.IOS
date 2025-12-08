@@ -155,7 +155,8 @@ interface range Gig1/0/13-18
 switchport mode access
 switchport access vlan 99
 interface range Gig1/0/19-24
-
+switchport mode access
+switchport access vlan 100
 
 
 ! servidor DHCP
