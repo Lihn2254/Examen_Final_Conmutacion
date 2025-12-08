@@ -1,0 +1,152 @@
+! Router ElCabrito
+enable
+config t
+hostname ElCabrito
+
+interface g0/0
+ip add 148.60.101.1 255.255.255.252
+no shut
+
+interface g0/1
+ip add 148.60.101.5 255.255.255.252
+no shut
+
+! Router LaVaca
+enable
+config t
+hostname LaVaca
+
+interface g0/1
+ip add 148.60.101.6 255.255.255.252
+no shut
+
+interface g0/0
+ip add 148.60.101.9 255.255.255.252
+no shut
+
+interface g0/2
+ip add 148.60.101.13 255.255.255.252
+no shut
+
+! Router LaSilla
+enable
+config t
+hostname LaSilla
+
+interface g0/1
+ip add 148.60.101.14 255.255.255.252
+no shut
+
+interface g0/0
+ip add 148.60.101.17 255.255.255.252
+no shut
+
+! MS1
+enable
+config t
+vtp mode client
+
+interface g1/0/3
+switchport mode trunk 
+switchport trunk allowed vlan 97,98,99,100
+interface g1/0/2
+switchport mode trunk 
+switchport trunk allowed vlan 97,98,99,100
+
+! MS2
+enable
+configure terminal
+vtp mode server
+vtp domain juanmark.com
+
+
+interface g1/0/2
+switchport mode trunk 
+switchport trunk allowed vlan 97,98,99,100
+interface g1/0/3
+switchport mode trunk 
+switchport trunk allowed vlan 97,98,99,100
+
+
+ip routing
+interface vlan 97
+ip add 148.60.97.1 255.255.255.0
+no shut
+
+interface vlan 98
+ip add 148.60.98.1 255.255.255.0
+no shut
+
+interface vlan 99
+ip add 148.60.99.1 255.255.255.0
+no shut
+
+interface vlan 100
+ip add 148.60.100.1 255.255.255.0
+
+
+
+! MS3
+enable
+configure terminal
+vtp mode client
+
+
+interface g1/0/2
+switchport mode trunk 
+switchport trunk allowed vlan 97,98,99,100
+interface g1/0/3
+switchport mode trunk 
+switchport trunk allowed vlan 97,98,99, 
+! MS4 
+enable
+configure terminal
+vtp mode client
+
+interface g1/0/1
+switchport mode trunk 
+switchport trunk allowed vlan 97,98,99,100
+interface g1/0/2
+switchport mode trunk 
+switchport trunk allowed vlan 97,98,99,100
+
+! crear VLANs
+vlan 97
+name GestionDeTi
+
+vlan 98
+name VENTAS
+
+vlan 99
+name COMPRAS
+
+vlan 100
+name Servicios
+
+! asignar ip a las vlan
+interface range Gig1/0/1-6
+switchport mode access
+switchport access vlan 97
+interface range Gig1/0/7-12
+switchport modo access
+switchport access vlna 98
+interface range Gig1/0/13-18
+switchport modo access
+switchport access vlan 99
+interface range Gig1/0/19-24
+
+
+
+! servidor DHCP
+ip dhcp pool GestionDeTi
+network 148.60.97.0 255.255.255.0
+default-router 148.60.97.1
+ip dhcp pool Ventas
+network 148.60.98.0 255.255.255.0
+default-router 148.60.98.1
+ip dhcp pool Compras
+network 148.60.99.0 255.255.255.0
+default-router 148.60.99.1
+ip dhcp pool Servicios
+network 148.60.100.0 255.255.255.0
+default-router 148.60.100.1
