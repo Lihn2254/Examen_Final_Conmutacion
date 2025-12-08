@@ -1,0 +1,294 @@
+! Router Itzamná
+enable 
+configure terminal
+hostname Itzamna
+
+interface g0/0
+ ip address 148.60.69.1 255.255.255.252
+ no shutdown
+
+interface g0/1
+ ip address 148.60.69.5 255.255.255.252
+ no shutdown
+
+! Router Yum Kaax
+enable 
+configure terminal
+hostname Yum Kaax
+
+interface g0/1
+ ip address 148.60.69.6 255.255.255.252
+ no shutdown
+
+! Router MS1
+enable 
+configure terminal
+hostname MS1
+
+vtp mode server
+vtp domain juanmark.com
+
+vlan 65
+ name VENTAS
+vlan 66
+ name TI
+vlan 67
+ name COMPRAS
+vlan 68
+ name MKT
+
+! DHCP Pools
+ip dhcp pool VENTAS
+ network 148.60.65.0 255.255.255.0
+ default-router 148.60.65.1
+
+ip dhcp pool TI
+ network 148.60.66.0 255.255.255.0
+ default-router 148.60.66.1
+
+ip dhcp pool COMPRAS
+ network 148.60.67.0 255.255.255.0
+ default-router 148.60.67.1
+
+ip dhcp pool MKT
+ network 148.60.68.0 255.255.255.0
+ default-router 148.60.68.1
+
+ip dhcp excluded-address 148.60.65.1 148.60.65.5
+ip dhcp excluded-address 148.60.66.1 148.60.66.5
+ip dhcp excluded-address 148.60.67.1 148.60.67.5
+ip dhcp excluded-address 148.60.68.1 148.60.68.5
+
+ip routing
+interface vlan 65
+ ip address 148.60.65.1 255.255.255.0
+
+interface vlan 66
+ ip address 148.60.66.1 255.255.255.0
+
+interface vlan 67
+ ip address 148.60.67.1 255.255.255.0
+
+interface vlan 68
+ ip address 148.60.68.1 255.255.255.0
+
+int g1/0/1
+ no switchport
+ ip address 148.60.69.2 255.255.255.252
+ 
+! Para EtherChannel1
+interface range g1/0/2 - 3
+ channel-group 1 mode active
+
+interface port-channel 1
+ switchport mode trunk
+ switchport trunk allowed vlan 65,66,67,68
+
+interface g1/0/4
+ switchport mode trunk
+ switchport trunk allowed vlan 65,66,67,68
+
+interface g1/0/5
+ switchport mode trunk
+ switchport trunk allowed vlan 65,66,67,68
+
+! Para EtherChannel2
+interface range g1/0/6 - 7
+ channel-group 2 mode active
+
+interface port-channel 2
+ switchport mode trunk
+ switchport trunk allowed vlan 65,66,67,68
+
+! Para EtherChannel3
+interface range g1/0/8 - 9
+ channel-group 3 mode active
+
+interface port-channel 3
+ switchport mode trunk
+ switchport trunk allowed vlan 65,66,67,68
+
+interface g1/0/24
+ switchport mode trunk
+ switchport trunk allowed vlan 65,66,67,68
+
+! Switch MS2
+enable 
+configure terminal
+hostname MS2
+
+vtp mode client
+vtp domain juanmark.com
+
+interface g1/0/1
+ switchport mode trunk
+ switchport trunk allowed vlan 65,66,67,68
+
+! Para EtherChannel1
+interface range g1/0/2 - 3
+ channel-group 1 mode active
+
+interface port-channel 1
+ switchport mode trunk
+ switchport trunk allowed vlan 65,66,67,68
+
+! Para EtherChannel4
+interface range g1/0/4 - 5
+ channel-group 4 mode active
+
+interface port-channel 4
+ switchport mode trunk
+ switchport trunk allowed vlan 65,66,67,68
+
+! Para EtherChannel5
+interface range g1/0/6 - 7
+ channel-group 5 mode active
+
+interface port-channel 5
+ switchport mode trunk
+ switchport trunk allowed vlan 65,66,67,68
+
+interface g1/0/8
+ switchport mode trunk
+ switchport trunk allowed vlan 65,66,67,68
+
+! Switch MS3
+enable 
+configure terminal
+hostname MS3
+
+vtp mode client
+vtp domain juanmark.com
+
+interface g1/0/1
+ switchport mode trunk
+ switchport trunk allowed vlan 65,66,67,68
+
+! Para EtherChannel5
+interface range g1/0/2 - 3
+ channel-group 5 mode active
+
+interface port-channel 5
+ switchport mode trunk
+ switchport trunk allowed vlan 65,66,67,68
+
+interface g1/0/4
+ switchport mode trunk
+ switchport trunk allowed vlan 65,66,67,68
+
+interface g1/0/5
+ switchport mode trunk
+ switchport trunk allowed vlan 65,66,67,68
+
+interface g1/0/6
+ switchport mode trunk
+ switchport trunk allowed vlan 65,66,67,68
+
+! Switch AS1
+enable 
+configure terminal
+hostname AS1
+
+vtp mode client
+vtp domain juanmark.com
+
+interface g0/1
+ switchport mode trunk
+ switchport trunk allowed vlan 65,66,67,68
+
+interface g0/2
+ switchport mode trunk
+ switchport trunk allowed vlan 65,66,67,68
+
+interface range fa0/1 - 6
+ switchport mode access
+ switchport access vlan 65
+
+interface range fa0/7 - 12
+ switchport mode access
+ switchport access vlan 66
+
+interface range fa0/13 - 18
+ switchport mode access
+ switchport access vlan 40
+
+interface range fa0/19 - 23
+ switchport mode access
+ switchport access vlan 50
+
+interface fa0/24
+ switchport mode trunk
+ switchport trunk allowed vlan 65,66,67,68
+
+! Switch AS2
+enable 
+configure terminal
+hostname AS2
+
+vtp mode client
+vtp domain juanmark.com
+
+interface g0/1
+ switchport mode trunk
+ switchport trunk allowed vlan 65,66,67,68
+
+interface g0/2
+ switchport mode trunk
+ switchport trunk allowed vlan 65,66,67,68
+
+interface range fa0/1 - 6
+ switchport mode access
+ switchport access vlan 65
+
+interface range fa0/7 - 12
+ switchport mode access
+ switchport access vlan 66
+
+interface range fa0/13 - 18
+ switchport mode access
+ switchport access vlan 40
+
+interface range fa0/19 - 23
+ switchport mode access
+ switchport access vlan 50
+
+interface fa0/24
+ switchport mode trunk
+ switchport trunk allowed vlan 65,66,67,68
+
+! Switch MS4
+enable 
+configure terminal
+hostname MS4
+
+vtp mode client
+vtp domain juanmark.com
+
+interface g1/0/1
+ switchport mode trunk
+ switchport trunk allowed vlan 65,66,67,68
+
+interface g1/0/2
+ switchport mode trunk
+ switchport trunk allowed vlan 65,66,67,68
+
+interface g1/0/3
+ switchport mode trunk
+ switchport trunk allowed vlan 65,66,67,68
+
+! Para EtherChannel4
+interface range g1/0/4 - 5
+ channel-group 4 mode active
+
+interface port-channel 4
+ switchport mode trunk
+ switchport trunk allowed vlan 65,66,67,68
+
+! Para EtherChannel3
+interface range g1/0/6 - 7
+ channel-group 3 mode active
+
+interface port-channel 3
+ switchport mode trunk
+ switchport trunk allowed vlan 65,66,67,68
+
