@@ -1,0 +1,120 @@
+
+! ======================================
+! DHCPSERVER
+
+enable
+configure terminal
+hostname DHCPSERVER
+
+
+
+
+! ======================================
+! S3VTPSERVER
+
+
+enable
+configure terminal
+hostname S3VTPSERVER
+
+! Para crear VLANs
+vlan 9
+name GestionDeTI
+vlan 5
+name MKT
+vlan 6
+name Ventas
+vlan 7
+name Compras
+
+! Para asignar puertos a VLANs
+interface range fa0/1 - 6
+switchport mode access
+switchport access vlan 9
+interface range fa0/7 - 12
+switchport mode access
+switchport access vlan 5
+interface range fa0/13 - 18
+switchport mode access
+switchport access vlan 6
+interface range fa0/19 - 24
+switchport mode access
+switchport access vlan 7
+
+vtp mode server
+vtp domain juanmark.com
+
+! Para un puerto trunk individual (tambien se pone en los dos lados) en el router, el router on a stick lo hace trunk
+interface fa0/1
+switchport mode trunk
+switchport trunk allowed vlan 5,6,7,9
+! Para verificar configuración
+! show interfaces trunk
+
+! Para un puerto trunk individual (tambien se pone en los dos lados) en el router, el router on a stick lo hace trunk
+interface fa0/2
+switchport mode trunk
+switchport trunk allowed vlan 5,6,7,9
+! Para verificar configuración
+! show interfaces trunk
+
+! ======================================
+! S1
+
+enable
+configure terminal
+hostname S1
+vtp mode client
+
+! Para un puerto trunk individual (tambien se pone en los dos lados) en el router, el router on a stick lo hace trunk
+interface fa0/1
+switchport mode trunk
+switchport trunk allowed vlan 5,6,7,9
+! Para verificar configuración
+! show interfaces trunk
+
+! ======================================
+! S2
+
+enable
+configure terminal
+hostname S2
+vtp mode client
+
+! Para un puerto trunk individual (tambien se pone en los dos lados) en el router, el router on a stick lo hace trunk
+interface fa0/1
+switchport mode trunk
+switchport trunk allowed vlan 5,6,7,9
+! Para verificar configuración
+! show interfaces trunk
+
+! Para un puerto trunk individual (tambien se pone en los dos lados) en el router, el router on a stick lo hace trunk
+interface fa0/2
+switchport mode trunk
+switchport trunk allowed vlan 5,6,7,9
+! Para verificar configuración
+! show interfaces trunk
+
+! ======================================
+! S4
+
+enable
+configure terminal
+hostname S4
+vtp mode client
+
+! Para un puerto trunk individual (tambien se pone en los dos lados) en el router, el router on a stick lo hace trunk
+interface fa0/1
+switchport mode trunk
+switchport trunk allowed vlan 5,6,7,9
+! Para verificar configuración
+! show interfaces trunk
+
+
+
+
+
+
+
+
+
