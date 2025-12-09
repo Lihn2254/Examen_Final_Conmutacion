@@ -21,7 +21,19 @@ login local
 username admin password cisco
 
 !Acceso
-enable pass cisco
+enable pass cisco
+
+int se0/0/1
+ip add 148.60.200.14
+no shut
+
+router rip
+version 2
+no aut0-summary
+network 148.60.97.0
+network 148.60.200.12
+
+
 
 ! Router LaVaca
 enable
@@ -40,10 +52,11 @@ interface g0/2
 ip add 148.60.101.13 255.255.255.252
 no shut
 
+!   HSRP
 int g0/2
 standby 1 ip 148.60.101.13
 standby 1 priority 110
-standby 1preempt
+standby 1 preempt
 
 ip domain-name juanmark.com
 crypto key generate rsa
@@ -56,6 +69,17 @@ username admin password cisco
 
 !Acceso
 enable pass cisco
+
+int se0/0/1
+ip add 148.60.200.10
+no shut
+
+!rip
+router rip
+version 2
+no aut0-summary
+network 148.60.200.8
+network 148.60.97.0
 
 ! Router LaSilla
 enable
@@ -70,11 +94,13 @@ interface g0/0
 ip add 148.60.97.3 255.255.255.0
 no shut
 
+!   HSRP
 int g0/1
 standby 1 ip 148.60.101.13
 standby 1 priority 100
 standby 1 preempt
 
+!ssh
 ip domain-name juanmark.com
 crypto key generate rsa
 2048
@@ -86,6 +112,18 @@ username admin password cisco
 
 !Acceso
 enable pass cisco
+
+int se0/0/1
+ip add 
+no shut
+
+!rip
+router rip
+version 2
+no aut0-summary
+network 
+network 148.60.97.0
+
 
 ! MS1
 enable
@@ -113,6 +151,13 @@ conf t
 spanning-tree vlan 97,98,99,100 root secondary
 end
 memory
+
+!SSH
+
+interface vlan 97 
+ip add 148.60.97.4 255.255.255.0
+no shut
+
 
 ip domain-name juanmark.com
 crypto key generate rsa
@@ -167,11 +212,43 @@ ip add 148.60.100.1 255.255.255.0
 ip dhcp excluded-address 148.60.98.10
 ip dhcp excluded-address 148.60.97.2
 ip dhcp excluded-address 148.60.97.3
+ip dhcp excluded-address 148.60.97.4
+ip dhcp excluded-address 148.60.97.5
+ip dhcp excluded-address 148.60.97.6
+ip dhcp excluded-address 148.60.97.7
 
 conf t
 spanning-tree vlan 97,98,99,100 root primary
 end
 memory
+
+ !HSRP
+int vlan 97
+standby 97 ip 148.60.97.5
+standby 97 priority 105
+standby 97 preempt
+standby 97 track GIgabitEthernet1/0/1
+int vlan 98
+standby 98 ip 148.60.98.5
+standby 98 priority 105
+standby 98 preempt
+standby 98 track GIgabitEthernet1/0/1
+int vlan 99
+standby 99 ip 148.60.99.5
+standby 99 priority 105
+standby 99 preempt
+standby 99 track GIgabitEthernet1/0/1
+int vlan 100
+standby 100 ip 148.60.100.5
+standby 100 priority 105
+standby 100 preempt
+standby 100 track GIgabitEthernet1/0/1
+
+!SSH
+
+interface vlan 97 
+ip add 148.60.97.5 255.255.255.0
+no shut
 
 ip domain-name juanmark.com
 crypto key generate rsa
@@ -184,6 +261,13 @@ username admin password cisco
 
 !Acceso
 enable pass cisco
+
+router rip
+ version 2
+ network 148.60.0.0
+ no auto-summary
+
+
 
 ! MS3
 enable
@@ -202,6 +286,39 @@ interface g1/0/3
 switchport nonegotiate
 switchport mode trunk 
 switchport trunk allowed vlan 97,98,99, 
+
+!HSRP
+int vlan 97
+standby 97 ip 148.60.97.5
+standby 97 priority 105
+standby 97 preempt
+standby 97 track GIgabitEthernet1/0/1
+no shut
+int vlan 98
+standby 98 ip 148.60.98.5
+standby 98 priority 105
+standby 98 preempt
+standby 98 track GIgabitEthernet1/0/1
+no shut
+int vlan 99
+standby 99 ip 148.60.99.5
+standby 99 priority 105
+standby 99 preempt
+standby 99 track GIgabitEthernet1/0/1
+no shut
+int vlan 100
+standby 100 ip 148.60.100.5
+standby 100 priority 105
+standby 100 preempt
+standby 100 track GIgabitEthernet1/0/1
+no shut
+
+
+!SSH
+
+interface vlan 97 
+ip add 148.60.97.6 255.255.255.0
+no shut
 
 ip domain-name juanmark.com
 crypto key generate rsa
@@ -228,6 +345,14 @@ interface g1/0/2
 switchport nonegotiate
 switchport mode trunk 
 switchport trunk allowed vlan 97,98,99,100
+
+!SSH
+
+interface vlan 97 
+ip add 148.60.97.7 255.255.255.0
+no shut
+
+ip default-gateway 148.60.97.1 
 
 ip domain-name juanmark.com
 crypto key generate rsa
