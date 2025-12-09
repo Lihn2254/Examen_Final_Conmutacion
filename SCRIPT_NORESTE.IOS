@@ -11,6 +11,18 @@ interface g0/1
 ip add 148.60.101.5 255.255.255.252
 no shut
 
+ip domain-name juanmark.com
+crypto key generate rsa
+2048
+ip ssh version 2
+line vty 0 4
+trans input ssh
+login local
+username admin password cisco
+
+!Acceso
+enable pass cisco
+
 ! Router LaVaca
 enable
 config t
@@ -33,6 +45,18 @@ standby 1 ip 148.60.101.13
 standby 1 priority 110
 standby 1preempt
 
+ip domain-name juanmark.com
+crypto key generate rsa
+2048
+ip ssh version 2
+line vty 0 4
+trans input ssh
+login local
+username admin password cisco
+
+!Acceso
+enable pass cisco
+
 ! Router LaSilla
 enable
 config t
@@ -50,6 +74,18 @@ int g0/1
 standby 1 ip 148.60.101.13
 standby 1 priority 100
 standby 1 preempt
+
+ip domain-name juanmark.com
+crypto key generate rsa
+2048
+ip ssh version 2
+line vty 0 4
+trans input ssh
+login local
+username admin password cisco
+
+!Acceso
+enable pass cisco
 
 ! MS1
 enable
@@ -78,6 +114,17 @@ spanning-tree vlan 97,98,99,100 root secondary
 end
 memory
 
+ip domain-name juanmark.com
+crypto key generate rsa
+2048
+ip ssh version 2
+line vty 0 4
+trans input ssh
+login local
+username admin password cisco
+
+!Acceso
+enable pass cisco
 
 ! MS2
 enable
@@ -126,6 +173,18 @@ spanning-tree vlan 97,98,99,100 root primary
 end
 memory
 
+ip domain-name juanmark.com
+crypto key generate rsa
+2048
+ip ssh version 2
+line vty 0 4
+trans input ssh
+login local
+username admin password cisco
+
+!Acceso
+enable pass cisco
+
 ! MS3
 enable
 configure terminal
@@ -144,6 +203,17 @@ switchport nonegotiate
 switchport mode trunk 
 switchport trunk allowed vlan 97,98,99, 
 
+ip domain-name juanmark.com
+crypto key generate rsa
+2048
+ip ssh version 2
+line vty 0 4
+trans input ssh
+login local
+username admin password cisco
+
+!Acceso
+enable pass cisco
 
 ! MS4 
 enable
@@ -158,6 +228,18 @@ interface g1/0/2
 switchport nonegotiate
 switchport mode trunk 
 switchport trunk allowed vlan 97,98,99,100
+
+ip domain-name juanmark.com
+crypto key generate rsa
+2048
+ip ssh version 2
+line vty 0 4
+trans input ssh
+login local
+username admin password cisco
+
+!Acceso
+enable pass cisco
 
 ! crear VLANs
 vlan 97
