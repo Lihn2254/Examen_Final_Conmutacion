@@ -4,7 +4,7 @@ config t
 hostname ElCabrito
 
 interface g0/0
-ip add 148.60.101.1 255.255.255.252
+ip add 148.60.97.2 255.255.255.0
 no shut
 
 interface g0/1
@@ -28,6 +28,11 @@ interface g0/2
 ip add 148.60.101.13 255.255.255.252
 no shut
 
+int g0/2
+standby 1 ip 148.60.101.13
+standby 1 priority 110
+standby 1preempt
+
 ! Router LaSilla
 enable
 config t
@@ -38,8 +43,13 @@ ip add 148.60.101.14 255.255.255.252
 no shut
 
 interface g0/0
-ip add 148.60.101.17 255.255.255.252
+ip add 148.60.97.3 255.255.255.0
 no shut
+
+int g0/1
+standby 1 ip 148.60.101.13
+standby 1 priority 100
+standby 1 preempt
 
 ! MS1
 enable
@@ -59,6 +69,15 @@ interface g1/0/2
 switchport nonegotiate
 switchport mode trunk 
 switchport trunk allowed vlan 97,98,99,100
+
+interface range gig1/0/4-24
+spanning-tree portfast
+
+conf t
+spanning-tree vlan 97,98,99,100 root secondary
+end
+memory
+
 
 ! MS2
 enable
@@ -97,6 +116,15 @@ no shut
 
 interface vlan 100
 ip add 148.60.100.1 255.255.255.0
+
+ip dhcp excluded-address 148.60.98.10
+ip dhcp excluded-address 148.60.97.2
+ip dhcp excluded-address 148.60.97.3
+
+conf t
+spanning-tree vlan 97,98,99,100 root primary
+end
+memory
 
 ! MS3
 enable
@@ -145,7 +173,7 @@ vlan 100
 name Servicios
 
 ! asignar ip a las vlan
-interface range Gig1/0/1-6
+interface range Gig1/0/4-6
 switchport mode access
 switchport access vlan 97
 interface range Gig1/0/7-12
