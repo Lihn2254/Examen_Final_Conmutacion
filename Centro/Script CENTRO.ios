@@ -1,10 +1,12 @@
+!---------------------------------
 !ROUTER CENTRO
+!---------------------------------
 int g0/0
 ip add 148.60.38.1 255.255.255.252
 no shut
 exit
 
-ip dhcp excluded-address 148.60.33.1
+ip dhcp excluded-address 148.60.33.1 148.60.33.4
 ip dhcp excluded-address 148.60.34.1 148.60.34.2
 ip dhcp excluded-address 148.60.35.1
 ip dhcp excluded-address 148.60.36.1
@@ -44,7 +46,24 @@ exit
 
 ip route 148.60.32.0 255.255.248.0 148.60.38.2
 
+!SSH
+hostname CENTRO
+ip domain-name juanmark.com
+crypto key generate rsa
+2048
+ip ssh version 2
+line vty 0 4
+trans input ssh
+login local
+username admin password cisco
+
+!Acceso
+enable pass cisco
+
+
+!---------------------------------
 ! MS0
+!---------------------------------
 vtp mode server
 vtp domain juanmark.com
 
@@ -67,6 +86,7 @@ int port-channel 1
 sw mo tr
 sw tr native vlan 34
 sw tr all vlan 33-37
+sw nonegotiate
 
 ip routing
 
@@ -78,11 +98,13 @@ int g1/0/4
 sw mo tr
 sw tr native vlan 34
 sw tr all vlan 33-37
+sw nonegotiate
 
 int g1/0/6
 sw mo tr
 sw tr native vlan 34
 sw tr all vlan 33-37
+sw nonegotiate
 
 int vlan 33
 ip add 148.60.33.1 255.255.255.0
@@ -125,7 +147,27 @@ sw mo acc
 sw acc vlan 37
 exit
 
+!SSH
+hostname MS0
+ip domain-name juanmark.com
+crypto key generate rsa
+2048
+ip ssh version 2
+line vty 0 4
+trans input ssh
+login local
+username admin password cisco
+
+!Acceso
+enable pass cisco
+
+!Ruteo por default para salir de la red
+ip route 0.0.0.0 0.0.0.0 148.60.38.1
+
+
+!---------------------------------
 ! MS1
+!---------------------------------
 vtp mode client
 vtp domain juanmark.com
 
@@ -136,16 +178,19 @@ int port-channel 1
 sw mo tr
 sw tr native vlan 34
 sw tr all vlan 33-37
+sw nonegotiate
 
 int g1/0/3
 sw mo tr
 sw tr native vlan 34
 sw tr all vlan 33-37
+sw nonegotiate
 
 int g1/0/6
 sw mo tr
 sw tr native vlan 34
 sw tr all vlan 33-37
+sw nonegotiate
 
 int range g1/0/4-5
 sw mo acc
@@ -168,8 +213,28 @@ sw mo acc
 sw acc vlan 37
 exit
 
+!Vlan para gestión por SSH
+int vlan 33
+ip add 148.60.33.2 255.255.255.0
 
+!SSH
+hostname MS1
+ip domain-name juanmark.com
+crypto key generate rsa
+2048
+ip ssh version 2
+line vty 0 4
+trans input ssh
+login local
+username admin password cisco
+
+!Acceso
+enable pass cisco
+
+
+!---------------------------------
 !Switch0
+!---------------------------------
 vtp mode client
 vtp domain juanmark.com
 
@@ -177,6 +242,7 @@ int range g0/1-2
 sw mo tr
 sw tr native vlan 34
 sw tr all vlan 33-37
+sw nonegotiate
 
 int range f0/1-5
 sw mo acc
@@ -198,7 +264,40 @@ int range f0/21-24
 sw mo acc
 sw acc vlan 37
 
+!Seguridad de puertos
+interface f0/1
+sw port-sec
+sw port-sec mac-add 00D0.BA52.A12D
+sw port-sec vio shut
+
+interface f0/16
+sw port-sec
+sw port-sec mac-add 0001.C99A.294A
+sw port-sec vio shut
+
+!Vlan para gestión por SSH
+int vlan 33
+ip add 148.60.33.3 255.255.255.0
+exit
+
+!SSH
+hostname Switch0
+ip domain-name juanmark.com
+crypto key generate rsa
+2048
+ip ssh version 2
+line vty 0 4
+trans input ssh
+login local
+username admin password cisco
+
+!Acceso
+enable pass cisco
+
+
+!---------------------------------
 !Switch1
+!---------------------------------
 vtp mode client
 vtp domain juanmark.com
 
@@ -206,6 +305,7 @@ int g0/1
 sw mo tr
 sw tr native vlan 34
 sw tr all vlan 33-37
+sw nonegotiate
 
 int range f0/1-5
 sw mo acc
@@ -227,3 +327,32 @@ int range f0/21-24
 sw mo acc
 sw acc vlan 37
 
+!Seguridad de puertos
+interface f0/1
+sw port-sec
+sw port-sec mac-add 00D0.BC44.06EE
+sw port-sec vio shut
+
+interface f0/16
+sw port-sec
+sw port-sec mac-add 0011.858D.9AF9
+sw port-sec vio shut
+
+!Vlan para gestión por SSH
+int vlan 33
+ip add 148.60.33.4 255.255.255.0
+exit
+
+!SSH
+hostname Switch1
+ip domain-name juanmark.com
+crypto key generate rsa
+2048
+ip ssh version 2
+line vty 0 4
+trans input ssh
+login local
+username admin password cisco
+
+!Acceso
+enable pass cisco
