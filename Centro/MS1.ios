@@ -1,0 +1,69 @@
+!---------------------------------
+! MS1
+!---------------------------------
+!Cliente VTP
+vtp mode client
+vtp domain juanmark.com
+
+!Ether-channel
+int range g1/0/1-2
+channel-group 1 mode active
+
+int port-channel 1
+sw mo tr
+sw tr native vlan 34
+sw tr all vlan 33-37
+sw nonegotiate
+
+!Puertos trunk
+int g1/0/3
+sw mo tr
+sw tr native vlan 34
+sw tr all vlan 33-37
+sw nonegotiate
+
+int g1/0/6
+sw mo tr
+sw tr native vlan 34
+sw tr all vlan 33-37
+sw nonegotiate
+
+!Puertos de acceso
+int range g1/0/4-5
+sw mo acc
+sw acc vlan 33
+
+int range g1/0/7-10
+sw mo acc
+sw acc vlan 34
+
+int range g1/0/11-15
+sw mo acc
+sw acc vlan 35
+
+int range g1/0/16-20
+sw mo acc
+sw acc vlan 36
+
+int range g1/0/21-24
+sw mo acc
+sw acc vlan 37
+exit
+
+!Vlan para gestión por SSH
+int vlan 33
+ip add 148.60.33.2 255.255.255.0
+
+!SSH
+hostname MS1
+ip domain-name juanmark.com
+crypto key generate rsa
+2048
+ip ssh version 2
+line vty 0 4
+trans input ssh
+login local
+username admin password cisco
+
+!Acceso
+enable pass cisco
