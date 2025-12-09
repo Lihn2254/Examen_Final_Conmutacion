@@ -1,3 +1,5 @@
+! REGION NOROESTE
+! === IPv4 
 
 ! ======================================
 ! DHCPSERVER
@@ -6,8 +8,52 @@ enable
 configure terminal
 hostname DHCPSERVER
 
+! Excluir direcciones (gateway, reservas)
+ip dhcp excluded-address 148.60.9.1 148.60.9.10
+ip dhcp excluded-address 148.60.5.1 148.60.5.10
+ip dhcp excluded-address 148.60.6.1 148.60.6.10
+ip dhcp excluded-address 148.60.7.1 148.60.7.10
+
+! Para configurar DHCP en el router
+ip dhcp pool VLAN9
+ network 148.60.9.0 255.255.255.0
+ default-router 148.60.9.1
+
+ip dhcp pool VLAN5
+ network 148.60.5.0 255.255.255.0
+ default-router 148.60.5.1
+
+ip dhcp pool VLAN6
+ network 148.60.6.0 255.255.255.0
+ default-router 148.60.6.1
+
+ ip dhcp pool VLAN7
+ network 148.60.7.0 255.255.255.0
+ default-router 148.60.7.1
 
 
+
+
+ ! Ruteo intervlan para el router (Router on a stick)
+interface GigabitEthernet0/0
+no ip address
+no shutdown
+! subinterfaces (no native VLAN used)
+interface GigabitEthernet0/0.9
+encapsulation dot1Q 9
+ip address 148.60.9.1 255.255.255.0
+
+interface GigabitEthernet0/0.5
+encapsulation dot1Q 5
+ip address 148.60.5.1 255.255.255.0
+
+interface GigabitEthernet0/0.6
+encapsulation dot1Q 6
+ip address 148.60.6.1 255.255.255.0
+
+interface GigabitEthernet0/0.7
+encapsulation dot1Q 7
+ip address 148.60.7.1 255.255.255.0
 
 ! ======================================
 ! S3VTPSERVER
@@ -17,7 +63,7 @@ enable
 configure terminal
 hostname S3VTPSERVER
 
-! Para crear VLANs
+!Creacion VLANs
 vlan 9
 name GestionDeTI
 vlan 5
@@ -27,8 +73,8 @@ name Ventas
 vlan 7
 name Compras
 
-! Para asignar puertos a VLANs
-interface range fa0/1 - 6
+!Asignar puertos a VLANs
+interface range fa0/3 - 6
 switchport mode access
 switchport access vlan 9
 interface range fa0/7 - 12
@@ -41,22 +87,21 @@ interface range fa0/19 - 24
 switchport mode access
 switchport access vlan 7
 
+!VTP SERVER
 vtp mode server
 vtp domain juanmark.com
+vtp version 2
 
-! Para un puerto trunk individual (tambien se pone en los dos lados) en el router, el router on a stick lo hace trunk
+!Switchport modo Trunk (enlace hacia S3VTPSERVER)
+
 interface fa0/1
 switchport mode trunk
 switchport trunk allowed vlan 5,6,7,9
-! Para verificar configuración
-! show interfaces trunk
 
-! Para un puerto trunk individual (tambien se pone en los dos lados) en el router, el router on a stick lo hace trunk
 interface fa0/2
 switchport mode trunk
 switchport trunk allowed vlan 5,6,7,9
-! Para verificar configuración
-! show interfaces trunk
+
 
 ! ======================================
 ! S1
@@ -64,14 +109,32 @@ switchport trunk allowed vlan 5,6,7,9
 enable
 configure terminal
 hostname S1
-vtp mode client
 
-! Para un puerto trunk individual (tambien se pone en los dos lados) en el router, el router on a stick lo hace trunk
+!VTP Client (enlace hacia S3VTPSERVER)
+vtp mode client
+vtp domain juanmark.com
+vtp version 2
+
+!Switchport modo Trunk (enlace hacia S3VTPSERVER)
 interface fa0/1
 switchport mode trunk
 switchport trunk allowed vlan 5,6,7,9
-! Para verificar configuración
-! show interfaces trunk
+
+!Switchport modo Access (dispositivos finales)
+! Ventas
+interface fa0/3
+switchport mode access
+switchport access vlan 6   
+
+! MKT
+interface fa0/4
+switchport mode access
+switchport access vlan 5   
+
+! Gestion IT
+interface fa0/5
+switchport mode access
+switchport access vlan 9   
 
 ! ======================================
 ! S2
@@ -79,21 +142,31 @@ switchport trunk allowed vlan 5,6,7,9
 enable
 configure terminal
 hostname S2
-vtp mode client
 
-! Para un puerto trunk individual (tambien se pone en los dos lados) en el router, el router on a stick lo hace trunk
+!VTP Client (enlace hacia S3VTPSERVER)
+vtp mode client
+vtp domain juanmark.com
+vtp version 2
+
+!Switchport modo Trunk (enlace hacia S3VTPSERVER)
+interface GigabitEthernet0/1    
+switchport mode trunk
+switchport trunk allowed vlan 5,6,7,9
+
 interface fa0/1
 switchport mode trunk
 switchport trunk allowed vlan 5,6,7,9
-! Para verificar configuración
-! show interfaces trunk
 
-! Para un puerto trunk individual (tambien se pone en los dos lados) en el router, el router on a stick lo hace trunk
 interface fa0/2
 switchport mode trunk
 switchport trunk allowed vlan 5,6,7,9
-! Para verificar configuración
-! show interfaces trunk
+
+!Switchport modo Access (dispositivos finales)
+! Puerto de Admin 
+interface fa0/3
+switchport mode access
+switchport access vlan 9
+
 
 ! ======================================
 ! S4
@@ -101,14 +174,89 @@ switchport trunk allowed vlan 5,6,7,9
 enable
 configure terminal
 hostname S4
-vtp mode client
 
-! Para un puerto trunk individual (tambien se pone en los dos lados) en el router, el router on a stick lo hace trunk
+!VTP Client (enlace hacia S3VTPSERVER)
+vtp mode client
+vtp domain juanmark.com
+vtp version 2
+
+!Switchport modo Trunk (enlace hacia S3VTPSERVER)
 interface fa0/1
 switchport mode trunk
 switchport trunk allowed vlan 5,6,7,9
-! Para verificar configuración
-! show interfaces trunk
+
+!Switchport modo Access (dispositivos finales)
+! Ventas
+interface fa0/3
+ switchport mode access
+ switchport access vlan 6   
+
+! Compras
+interface fa0/4
+ switchport mode access
+ switchport access vlan 7   
+
+! Gestion IT
+interface fa0/5
+ switchport mode access
+ switchport access vlan 9   
+
+
+
+
+
+
+
+! === IPv6 Dual Stack 
+
+
+configure terminal
+
+! Activar IPv6 global
+ipv6 unicast-routing
+
+
+
+! Subinterfaces IPv6
+
+interface GigabitEthernet0/0.9
+ ipv6 address 2006:AFEA:B0CA:9::1/64
+ ipv6 nd other-config-flag
+ ipv6 dhcp server POOL-VLAN9
+ ipv6 enable
+
+interface GigabitEthernet0/0.5
+ ipv6 address 2006:AFEA:B0CA:5::1/64
+ ipv6 nd other-config-flag
+ ipv6 dhcp server POOL-VLAN5
+ ipv6 enable
+
+interface GigabitEthernet0/0.6
+ ipv6 address 2006:AFEA:B0CA:6::1/64
+ ipv6 nd other-config-flag
+ ipv6 dhcp server POOL-VLAN6
+ ipv6 enable
+
+interface GigabitEthernet0/0.7
+ ipv6 address 2006:AFEA:B0CA:7::1/64
+ ipv6 nd other-config-flag
+ ipv6 dhcp server POOL-VLAN7
+ ipv6 enable
+
+
+! DHCPv6 Stateless
+
+ipv6 dhcp pool POOL-VLAN9
+ dns-server 2006:AFEA:B0CA::53
+
+ipv6 dhcp pool POOL-VLAN5
+ dns-server 2006:AFEA:B0CA::53
+
+ipv6 dhcp pool POOL-VLAN6
+ dns-server 2006:AFEA:B0CA::53
+
+ipv6 dhcp pool POOL-VLAN7
+ dns-server 2006:AFEA:B0CA::53
 
 
 
