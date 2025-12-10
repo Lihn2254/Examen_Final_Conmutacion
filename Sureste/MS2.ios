@@ -1,0 +1,61 @@
+! Switch MS2
+enable 
+configure terminal
+hostname MS2
+
+vtp mode client
+vtp domain juanmark.com
+
+ip domain-name juanmark.com
+crypto key generate rsa
+2048
+ip ssh version 2
+line vty 0 4
+trans input ssh
+login local
+username admin password cisco
+
+!Acceso
+enable password cisco
+
+spanning-tree mode rapid-pvst
+
+interface vlan 1
+ ip address 148.60.64.11 255.255.255.0
+
+interface g1/0/1
+ switchport mode trunk
+ switchport nonegotiate
+ switchport trunk allowed vlan 1,65,66,67,68
+
+! Para EtherChannel1
+interface range g1/0/2 - 3
+ channel-group 1 mode active
+
+interface port-channel 1
+ switchport mode trunk
+ switchport nonegotiate
+ switchport trunk allowed vlan 1,65,66,67,68
+
+! Para EtherChannel4
+interface range g1/0/4 - 5
+ channel-group 4 mode active
+
+interface port-channel 4
+ switchport mode trunk
+ switchport nonegotiate
+ switchport trunk allowed vlan 1,65,66,67,68
+
+! Para EtherChannel5
+interface range g1/0/6 - 7
+ channel-group 5 mode active
+
+interface port-channel 5
+ switchport mode trunk
+ switchport nonegotiate
+ switchport trunk allowed vlan 1,65,66,67,68
+
+interface g1/0/8
+ switchport mode trunk
+ switchport nonegotiate
+ switchport trunk allowed vlan 1,65,66,67,68

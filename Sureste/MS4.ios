@@ -1,0 +1,97 @@
+! Switch MS4
+enable 
+configure terminal
+hostname MS4
+
+vtp mode client
+vtp domain juanmark.com
+
+ip domain-name juanmark.com
+crypto key generate rsa
+2048
+ip ssh version 2
+line vty 0 4
+trans input ssh
+login local
+username admin password cisco
+
+!Acceso
+enable password cisco
+
+spanning-tree mode rapid-pvst
+spanning-tree vlan 67,68 priority 4096
+spanning-tree vlan 65,66 priority 8192
+
+ip routing
+interface vlan 1
+ ip address 148.60.64.3 255.255.255.0
+ standby 1 ip 148.60.64.1
+ standby 1 priority 100
+ standby 1 preempt
+
+interface vlan 65
+ ip address 148.60.65.3 255.255.255.0
+ standby 65 ip 148.60.65.1
+ standby 65 priority 100
+ standby 65 preempt
+
+interface vlan 66
+ ip address 148.60.66.3 255.255.255.0
+ standby 66 ip 148.60.66.1
+ standby 66 priority 100
+ standby 66 preempt
+
+interface vlan 67
+ ip address 148.60.67.3 255.255.255.0
+ standby 67 ip 148.60.67.1
+ standby 67 priority 100
+ standby 67 preempt
+
+interface vlan 68
+ ip address 148.60.68.3 255.255.255.0
+ standby 68 ip 148.60.68.1
+ standby 68 priority 100
+ standby 68 preempt
+
+ip route 0.0.0.0 0.0.0.0 148.60.69.5
+
+interface g1/0/1
+ no switchport
+ ip add 148.60.69.6 255.255.255.252
+
+interface g1/0/2
+ switchport mode trunk
+ switchport nonegotiate
+ switchport trunk allowed vlan 1,65,66,67,68
+
+interface g1/0/3
+ switchport mode trunk
+ switchport nonegotiate
+ switchport trunk allowed vlan 1,65,66,67,68
+
+! Para EtherChannel4
+interface range g1/0/4 - 5
+ channel-group 4 mode active
+
+interface port-channel 4
+ switchport mode trunk
+ switchport nonegotiate
+ switchport trunk allowed vlan 1,65,66,67,68
+
+! Para EtherChannel3
+interface range g1/0/6 - 7
+ channel-group 3 mode active
+
+interface port-channel 3
+ switchport mode trunk
+ switchport nonegotiate
+ switchport trunk allowed vlan 1,65,66,67,68
+
+! Para EtherChannel6
+interface range g1/0/8 - 9
+ channel-group 6 mode active
+
+interface port-channel 6
+ switchport mode trunk
+ switchport nonegotiate
+ switchport trunk allowed vlan 1,65,66,67,68
