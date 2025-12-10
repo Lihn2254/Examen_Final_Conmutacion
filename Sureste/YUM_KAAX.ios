@@ -40,4 +40,5 @@ interface g0/0
 
 interface g0/2
  ip address 148.60.200.17 255.255.255.252
- shutdown
+ bandwith 512
+ no shutdown
