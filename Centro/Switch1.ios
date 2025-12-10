@@ -1,0 +1,64 @@
+!---------------------------------
+!Switch1
+!---------------------------------
+!Cliente VTP
+vtp mode client
+vtp domain juanmark.com
+
+!Puerto trunk
+interface g0/1
+switchport mode trunkunk
+switchport trunk native vlan 34
+switchport trunk allowed vlan 33-37
+switchport nonegotiate
+
+!Puertos de acceso
+interface range f0/1-5
+switchport mode access
+switchport access vlan 33
+
+interface range f0/6-10
+switchport mode access
+switchport access vlan 34
+
+interface range f0/11-15
+switchport mode access
+switchport access vlan 35
+
+interface range f0/16-20
+switchport mode access
+switchport access vlan 36
+
+interface range f0/21-24
+switchport mode access
+switchport access vlan 37
+
+!Seguridad de puertos
+interface f0/1
+switchport port-security
+switchport port-security mac-address 00D0.BC44.06EE
+switchport port-security violation shutdown
+
+interface f0/16
+switchport port-security
+switchport port-security mac-address 0011.858D.9AF9
+switchport port-security violation shutdown
+
+!Vlan para gestión por SSH
+interface vlan 33
+ip address 148.60.33.4 255.255.255.0
+exit
+
+!SSH
+hostname Switch1
+ip domain-name juanmark.com
+crypto key generate rsa
+2048
+ip ssh version 2
+line vty 0 4
+transport input ssh
+login local
+username admin password cisco
+
+!Acceso
+enable password cisco
