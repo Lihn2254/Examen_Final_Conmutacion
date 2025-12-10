@@ -9,14 +9,17 @@ no shutdown
 !Conexión con Sureste
 interface g0/1
 ip address 148.60.200.1 255.255.255.252
+bandwidth 1000
 no shutdown
 !Conexión con Noroeste
 interface g0/2
 ip address 148.60.200.5 255.255.255.252
+bandwidth 1000
 no shutdown
 !Conexión con Noreste
 interface s0/0/0
 ip address 148.60.200.13 255.255.255.252
+bandwidth 1000
 no shutdown
 exit
 

@@ -60,5 +60,5 @@ transport input ssh
 login local
 username admin password cisco
 
-!accesseso
+!Acceso
 enable password cisco
