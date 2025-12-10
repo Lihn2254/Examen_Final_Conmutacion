@@ -1,0 +1,74 @@
+enable 
+configure terminal
+hostname AS1
+
+vtp mode client
+vtp domain juanmark.com
+
+ip domain-name juanmark.com
+crypto key generate rsa
+2048
+ip ssh version 2
+line vty 0 4
+trans input ssh
+login local
+username admin password cisco
+
+!Acceso
+enable password cisco
+
+spanning-tree mode rapid-pvst
+
+interface vlan 1
+ ip address 148.60.64.16 255.255.255.0
+ ip default-gateway 148.60.64.1  
+
+interface g0/1
+ switchport mode trunk
+ switchport nonegotiate
+ switchport trunk allowed vlan 1,65,66,67,68
+
+interface g0/2
+ switchport mode trunk
+ switchport nonegotiate
+ switchport trunk allowed vlan 1,65,66,67,68
+
+interface fa0/1
+ switchport mode access
+ switchport access vlan 1
+
+interface range fa0/2 - 6
+ switchport mode access
+ switchport access vlan 65
+
+interface range fa0/7 - 12
+ switchport mode access
+ switchport access vlan 66
+
+interface range fa0/13 - 18
+ switchport mode access
+ switchport access vlan 67
+
+interface range fa0/19 - 23
+ switchport mode access
+ switchport access vlan 68
+
+interface fa0/24
+ switchport mode trunk
+ switchport nonegotiate
+ switchport trunk allowed vlan 1,65,66,67,68
+
+interface f0/2
+ switchport port-security
+ switchport port-security mac-address 0007.ECA9.B716
+ switchport port-security violation shutdown
+
+interface f0/17
+ switchport port-security
+ switchport port-security mac-address 0001.6425.A678
+ switchport port-security violation shutdown
+
+interface f0/7
+ switchport port-security
+ switchport port-security mac-address 000D.BDEA.A76A
+ switchport port-security violation shutdown

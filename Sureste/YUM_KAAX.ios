@@ -1,0 +1,43 @@
+! Router Yum Kaax
+enable 
+configure terminal
+hostname Yum_Kaax
+
+ip domain-name juanmark.com
+crypto key generate rsa
+2048
+ip ssh version 2
+line vty 0 4
+trans input ssh
+login local
+username admin password cisco
+
+!Acceso
+enable password cisco
+
+router rip
+ version 2
+ no auto-summary
+ network 148.60.69.4
+ network 148.60.69.8
+
+ip route 148.60.64.0 255.255.248.0 148.60.69.6
+
+interface g0/0
+ ip address 148.60.69.4 255.255.255.248
+ standby 1 ip 148.60.69.5
+ standby 1 priority 100
+ standby 1 preempt
+ no shutdown
+
+interface g0/1
+ ip address 148.60.69.10 255.255.255.252
+ no shutdown
+
+interface g0/0
+ ip address 148.60.69.5 255.255.255.252
+ no shutdown
+
+interface g0/2
+ ip address 148.60.200.17 255.255.255.252
+ shutdown

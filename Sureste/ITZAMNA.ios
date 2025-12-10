@@ -1,0 +1,36 @@
+! Router Itzamná
+enable 
+configure terminal
+hostname Itzamna
+
+ip domain-name juanmark.com
+crypto key generate rsa
+2048
+ip ssh version 2
+line vty 0 4
+trans input ssh
+login local
+username admin password cisco
+
+!Acceso
+enable password cisco
+
+router rip
+ version 2
+ no auto-summary
+ network 148.60.0.0
+ redistribute static
+
+ip route 148.60.64.0 255.255.248.0 148.60.69.1
+
+interface g0/0
+ ip address 148.60.69.2 255.255.255.252
+ no shutdown
+
+interface g0/1
+ ip address 148.60.69.9 255.255.255.252
+ no shutdown
+
+interface g0/2
+ ip address 148.60.200.2 255.255.255.252
+ shutdown
