@@ -152,6 +152,9 @@ spanning-tree vlan 97,98,99,100 root secondary
 end
 memory
 
+!STP
+spanning-tree vlan 97,98,99,100 root secondary
+
 !SSH
 
 interface vlan 97 
@@ -217,10 +220,8 @@ ip dhcp excluded-address 148.60.97.5
 ip dhcp excluded-address 148.60.97.6
 ip dhcp excluded-address 148.60.97.7
 
-conf t
+!STP
 spanning-tree vlan 97,98,99,100 root primary
-end
-memory
 
  !HSRP
 int vlan 97
