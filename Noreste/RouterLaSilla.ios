@@ -1,0 +1,38 @@
+! Router LaSilla
+enable
+config t
+hostname LaSilla
+
+interface g0/1
+ip add 148.60.101.14 255.255.255.252
+no shut
+
+interface g0/0
+ip add 148.60.97.3 255.255.255.0
+no shut
+
+!ssh
+ip domain-name juanmark.com
+crypto key generate rsa
+2048
+ip ssh version 2
+line vty 0 4
+trans input ssh
+login local
+username admin password cisco
+
+!Acceso
+enable pass cisco
+
+!multiusuario
+int se0/0/1
+ip add 148.60.200.18 255.255.255.252
+no shut
+
+!rip
+router rip
+version 2
+no aut0-summary
+network 
+network 148.60.97.0
+network 148.60.200.16

@@ -1,0 +1,168 @@
+! DHCPSERVER
+
+enable
+configure terminal
+hostname DHCPSERVER
+
+! Excluir direcciones (gateway, reservas)
+ip dhcp excluded-address 148.60.9.1 148.60.9.10
+ip dhcp excluded-address 148.60.5.1 148.60.5.10
+ip dhcp excluded-address 148.60.6.1 148.60.6.10
+ip dhcp excluded-address 148.60.7.1 148.60.7.10
+
+! Para configurar DHCP en el router
+ip dhcp pool VLAN9
+network 148.60.9.0 255.255.255.0
+default-router 148.60.9.1
+
+ip dhcp pool VLAN5
+network 148.60.5.0 255.255.255.0
+default-router 148.60.5.1
+
+ip dhcp pool VLAN6
+network 148.60.6.0 255.255.255.0
+default-router 148.60.6.1
+
+ip dhcp pool VLAN7
+network 148.60.7.0 255.255.255.0
+default-router 148.60.7.1
+
+
+! Ruteo intervlan para el router (Router on a stick)
+interface GigabitEthernet0/0
+no ip address
+no shutdown
+! subinterfaces (no native VLAN used)
+interface GigabitEthernet0/0.9
+encapsulation dot1Q 9
+ip address 148.60.9.1 255.255.255.0
+
+interface GigabitEthernet0/0.5
+encapsulation dot1Q 5
+ip address 148.60.5.1 255.255.255.0
+
+interface GigabitEthernet0/0.6
+encapsulation dot1Q 6
+ip address 148.60.6.1 255.255.255.0
+
+interface GigabitEthernet0/0.7
+encapsulation dot1Q 7
+ip address 148.60.7.1 255.255.255.0
+
+
+interface g0/0
+ip add 148.60.10.1 255.255.255.0
+no shut
+
+! RIP
+router rip
+no auto-summary
+version 2
+net 148.60.9.0
+net 148.60.5.0
+net 148.60.6.0
+net 148.60.7.0
+net 148.60.10.0
+exit
+
+
+
+!SSH
+
+interface vlan 9 
+ip add 148.60.9.2 255.255.255.0
+no shut
+
+ip domain-name juanmark.com
+crypto key generate rsa
+2048
+ip ssh version 2
+line vty 0 4
+trans input ssh
+login local
+username admin password cisco
+
+
+!Acceso
+enable pass cisco
+
+!Conexion Multiusuario
+
+interface se0/3/0
+ip add 148.60.200.9 255.255.255.0
+no shut
+
+interface gig0/2
+ip add 148.60.200.6 255.255.255.0
+no shut
+
+interface se0/3/0
+bandwidth 1000
+
+interface gig0/2
+bandwidth 1000
+
+! RIP
+router rip
+no auto-summary
+version 2
+net 148.60.200.4
+net 148.60.200.8
+exit
+
+
+
+
+
+! IPv6 Dual Stack 
+
+
+configure terminal
+
+! Activar IPv6 global
+ipv6 unicast-routing
+
+
+
+! Subinterfaces IPv6
+
+interface GigabitEthernet0/0.9
+ipv6 address 2006:AFEA:B0CA:9::1/64
+ipv6 nd other-config-flag
+ipv6 dhcp server POOL-VLAN9
+ipv6 enable
+
+interface GigabitEthernet0/0.5
+ipv6 address 2006:AFEA:B0CA:5::1/64
+ipv6 nd other-config-flag
+ipv6 dhcp server POOL-VLAN5
+ipv6 enable
+
+interface GigabitEthernet0/0.6
+ipv6 address 2006:AFEA:B0CA:6::1/64
+ipv6 nd other-config-flag
+ipv6 dhcp server POOL-VLAN6
+ipv6 enable
+
+interface GigabitEthernet0/0.7
+ipv6 address 2006:AFEA:B0CA:7::1/64
+ipv6 nd other-config-flag
+ipv6 dhcp server POOL-VLAN7
+ipv6 enable
+
+
+! DHCPv6 Stateless
+
+ipv6 dhcp pool POOL-VLAN9
+dns-server 2006:AFEA:B0CA::53
+
+ipv6 dhcp pool POOL-VLAN5
+dns-server 2006:AFEA:B0CA::53
+
+ipv6 dhcp pool POOL-VLAN6
+dns-server 2006:AFEA:B0CA::53
+
+ipv6 dhcp pool POOL-VLAN7
+dns-server 2006:AFEA:B0CA::53
+
+

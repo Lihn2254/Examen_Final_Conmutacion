@@ -1,0 +1,58 @@
+! MS1
+enable
+config t
+vtp mode client
+
+
+interface g1/0/1
+switchport nonegotiate
+switchport mode trunk 
+switchport trunk allowed vlan 97,98,99,100
+interface g1/0/3
+switchport nonegotiate
+switchport mode trunk 
+switchport trunk allowed vlan 97,98,99,100
+interface g1/0/2
+switchport nonegotiate
+switchport mode trunk 
+switchport trunk allowed vlan 97,98,99,100
+
+interface range gig1/0/4-24
+spanning-tree portfast
+
+conf t
+spanning-tree vlan 97,98,99,100 root secondary
+end
+memory
+
+!STP
+spanning-tree vlan 97,98,99,100 root secondary
+
+!SSH
+
+interface vlan 97 
+ip add 148.60.97.4 255.255.255.0
+no shut
+
+
+ip domain-name juanmark.com
+crypto key generate rsa
+2048
+ip ssh version 2
+line vty 0 4
+trans input ssh
+login local
+username admin password cisco
+
+!Acceso
+enable pass cisco
+
+!Seguridad de puertos
+interface g1/0/13
+switchport port-security
+switchport port-security mac-address 00D0.FF99.10D5
+switchport port-security violation shutdown
+interface g1/0/19
+switchport port-security
+switchport port-security mac-address 00D0.5861.E754
+switchport port-security violation shutdown
