@@ -1,0 +1,47 @@
+! MS4 
+enable
+configure terminal
+vtp mode client
+
+interface g1/0/1
+switchport nonegotiate
+switchport mode trunk 
+switchport trunk allowed vlan 97,98,99,100
+interface g1/0/2
+switchport nonegotiate
+switchport mode trunk 
+switchport trunk allowed vlan 97,98,99,100
+
+!SSH
+
+interface vlan 97 
+ip add 148.60.97.7 255.255.255.0
+no shut
+
+ip default-gateway 148.60.97.1 
+
+ip domain-name juanmark.com
+crypto key generate rsa
+2048
+ip ssh version 2
+line vty 0 4
+trans input ssh
+login local
+username admin password cisco
+
+!Acceso
+enable pass cisco
+
+!Seguridad de puertos
+interface g1/0/3
+switchport port-security
+switchport port-security mac-address 0001.97E0.D088
+switchport port-security violation shutdown
+interface g1/0/7
+switchport port-security
+switchport port-security mac-address 0060.5C69.D33C
+switchport port-security violation shutdown
+interface g1/0/13
+switchport port-security
+switchport port-security mac-address 0030.F2A4.20A3
+switchport port-security violation shutdown
