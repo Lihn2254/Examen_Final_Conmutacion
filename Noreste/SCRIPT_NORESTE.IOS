@@ -1,0 +1,437 @@
+! Router ElCabrito
+enable
+config t
+hostname ElCabrito
+
+interface g0/0
+ip add 148.60.97.2 255.255.255.0
+no shut
+
+interface g0/1
+ip add 148.60.101.5 255.255.255.252
+no shut
+
+!SSH
+ip domain-name juanmark.com
+crypto key generate rsa
+2048
+ip ssh version 2
+line vty 0 4
+trans input ssh
+login local
+username admin password cisco
+
+!Acceso
+enable pass cisco
+
+!multiusuario
+int se0/0/1
+ip add 148.60.200.14 255.255.255.252
+bandwith 1000
+no shut
+
+router rip
+version 2
+no auto-summary
+network 148.60.97.0
+network 148.60.200.12
+
+
+
+! Router LaVaca
+enable
+config t
+hostname LaVaca
+
+interface g0/1
+ip add 148.60.101.6 255.255.255.252
+no shut
+
+interface g0/0
+ip add 148.60.101.9 255.255.255.252
+no shut
+
+interface g0/2
+ip add 148.60.101.13 255.255.255.252
+no shut
+
+ip domain-name juanmark.com
+crypto key generate rsa
+2048
+ip ssh version 2
+line vty 0 4
+trans input ssh
+login local
+username admin password cisco
+
+!Acceso
+enable pass cisco
+
+!multiusuario
+int se0/0/1
+ip add 148.60.200.10 255.255.255.252
+no shut
+
+!rip
+router rip
+version 2
+no aut0-summary
+network 148.60.200.8
+network 148.60.97.0
+
+! Router LaSilla
+enable
+config t
+hostname LaSilla
+
+interface g0/1
+ip add 148.60.101.14 255.255.255.252
+no shut
+
+interface g0/0
+ip add 148.60.97.3 255.255.255.0
+no shut
+
+!ssh
+ip domain-name juanmark.com
+crypto key generate rsa
+2048
+ip ssh version 2
+line vty 0 4
+trans input ssh
+login local
+username admin password cisco
+
+!Acceso
+enable pass cisco
+
+!multiusuario
+int se0/0/1
+ip add 148.60.200.18 255.255.255.252
+no shut
+
+!rip
+router rip
+version 2
+no aut0-summary
+network 
+network 148.60.97.0
+network 148.60.200.16
+
+! MS1
+enable
+config t
+vtp mode client
+
+
+interface g1/0/1
+switchport nonegotiate
+switchport mode trunk 
+switchport trunk allowed vlan 97,98,99,100
+interface g1/0/3
+switchport nonegotiate
+switchport mode trunk 
+switchport trunk allowed vlan 97,98,99,100
+interface g1/0/2
+switchport nonegotiate
+switchport mode trunk 
+switchport trunk allowed vlan 97,98,99,100
+
+interface range gig1/0/4-24
+spanning-tree portfast
+
+conf t
+spanning-tree vlan 97,98,99,100 root secondary
+end
+memory
+
+!STP
+spanning-tree vlan 97,98,99,100 root secondary
+
+!SSH
+
+interface vlan 97 
+ip add 148.60.97.4 255.255.255.0
+no shut
+
+
+ip domain-name juanmark.com
+crypto key generate rsa
+2048
+ip ssh version 2
+line vty 0 4
+trans input ssh
+login local
+username admin password cisco
+
+!Acceso
+enable pass cisco
+
+!Seguridad de puertos
+interface g1/0/13
+switchport port-security
+switchport port-security mac-address 00D0.FF99.10D5
+switchport port-security violation shutdown
+interface g1/0/19
+switchport port-security
+switchport port-security mac-address 00D0.5861.E754
+switchport port-security violation shutdown
+
+! MS2
+enable
+config terminal
+interface g1/0/1
+no switchport
+ip add 148.60.101.10 255.255.255.252
+no shut
+
+vtp mode server
+vtp domain juanmark.com
+
+
+interface g1/0/2
+switchport nonegotiate
+switchport mode trunk 
+switchport trunk allowed vlan 97,98,99,100
+interface g1/0/3
+switchport nonegotiate
+switchport mode trunk 
+switchport trunk allowed vlan 97,98,99,100
+
+! crear VLANs
+vlan 97
+name GestionDeTi
+
+vlan 98
+name VENTAS
+
+vlan 99
+name COMPRAS
+
+vlan 100
+name Servicios
+
+! asignar ip a las vlan
+interface range Gig1/0/4-6
+switchport mode access
+switchport access vlan 97
+interface range Gig1/0/7-12
+switchport mode access
+switchport access vlan 98
+interface range Gig1/0/13-18
+switchport mode access
+switchport access vlan 99
+interface range Gig1/0/19-24
+switchport mode access
+switchport access vlan 100
+
+! servidor DHCP
+ip dhcp pool GestionDeTi
+network 148.60.97.0 255.255.255.0
+default-router 148.60.97.1
+ip dhcp pool Ventas
+network 148.60.98.0 255.255.255.0
+default-router 148.60.98.1
+ip dhcp pool Compras
+network 148.60.99.0 255.255.255.0
+default-router 148.60.99.1
+ip dhcp pool Servicios
+network 148.60.100.0 255.255.255.0
+default-router 148.60.100.1
+
+ip routing
+interface vlan 97
+ip add 148.60.97.1 255.255.255.0
+no shut
+
+interface vlan 98
+ip add 148.60.98.1 255.255.255.0
+no shut
+
+interface vlan 99
+ip add 148.60.99.1 255.255.255.0
+no shut
+
+interface vlan 100
+ip add 148.60.100.1 255.255.255.0
+
+ip dhcp excluded-address 148.60.98.10
+ip dhcp excluded-address 148.60.97.2
+ip dhcp excluded-address 148.60.97.3
+ip dhcp excluded-address 148.60.97.4
+ip dhcp excluded-address 148.60.97.5
+ip dhcp excluded-address 148.60.97.6
+ip dhcp excluded-address 148.60.97.7
+
+!STP
+spanning-tree vlan 97,98,99,100 root primary
+
+ !HSRP
+int vlan 97
+standby 97 ip 148.60.97.5
+standby 97 priority 105
+standby 97 preempt
+standby 97 track GIgabitEthernet1/0/1
+int vlan 98
+standby 98 ip 148.60.98.5
+standby 98 priority 105
+standby 98 preempt
+standby 98 track GIgabitEthernet1/0/1
+int vlan 99
+standby 99 ip 148.60.99.5
+standby 99 priority 105
+standby 99 preempt
+standby 99 track GIgabitEthernet1/0/1
+int vlan 100
+standby 100 ip 148.60.100.5
+standby 100 priority 105
+standby 100 preempt
+standby 100 track GIgabitEthernet1/0/1
+
+!SSH
+
+interface vlan 97 
+ip add 148.60.97.5 255.255.255.0
+no shut
+
+ip domain-name juanmark.com
+crypto key generate rsa
+2048
+ip ssh version 2
+line vty 0 4
+trans input ssh
+login local
+username admin password cisco
+
+!Acceso
+enable pass cisco
+
+router rip
+ version 2
+ network 148.60.0.0
+ no auto-summary
+
+! MS3
+enable
+configure terminal
+vtp mode client
+
+interface g1/0/1
+switchport nonegotiate
+switchport mode trunk 
+switchport trunk allowed vlan 97,98,99,100
+interface g1/0/2
+switchport nonegotiate
+switchport mode trunk 
+switchport trunk allowed vlan 97,98,99,100
+interface g1/0/3
+switchport nonegotiate
+switchport mode trunk 
+switchport trunk allowed vlan 97,98,99, 
+
+!HSRP
+int vlan 97
+standby 97 ip 148.60.97.5
+standby 97 priority 105
+standby 97 preempt
+standby 97 track GIgabitEthernet1/0/1
+no shut
+int vlan 98
+standby 98 ip 148.60.98.5
+standby 98 priority 105
+standby 98 preempt
+standby 98 track GIgabitEthernet1/0/1
+no shut
+int vlan 99
+standby 99 ip 148.60.99.5
+standby 99 priority 105
+standby 99 preempt
+standby 99 track GIgabitEthernet1/0/1
+no shut
+int vlan 100
+standby 100 ip 148.60.100.5
+standby 100 priority 105
+standby 100 preempt
+standby 100 track GIgabitEthernet1/0/1
+no shut
+
+!SSH
+
+interface vlan 97 
+ip add 148.60.97.6 255.255.255.0
+no shut
+
+ip domain-name juanmark.com
+crypto key generate rsa
+2048
+ip ssh version 2
+line vty 0 4
+trans input ssh
+login local
+username admin password cisco
+
+!Acceso
+enable pass cisco
+
+!Seguridad de puertos
+interface g1/0/4
+switchport port-security
+switchport port-security mac-address 0090.0CB4.A7CB
+switchport port-security violation shutdown
+interface g1/0/7
+switchport port-security
+switchport port-security mac-address 0007.EC12.AB95
+switchport port-security violation shutdown
+interface g1/0/13
+switchport port-security
+switchport port-security mac-address 0040.0B5A.1571
+switchport port-security violation shutdown
+
+! MS4 
+enable
+configure terminal
+vtp mode client
+
+interface g1/0/1
+switchport nonegotiate
+switchport mode trunk 
+switchport trunk allowed vlan 97,98,99,100
+interface g1/0/2
+switchport nonegotiate
+switchport mode trunk 
+switchport trunk allowed vlan 97,98,99,100
+
+!SSH
+
+interface vlan 97 
+ip add 148.60.97.7 255.255.255.0
+no shut
+
+ip default-gateway 148.60.97.1 
+
+ip domain-name juanmark.com
+crypto key generate rsa
+2048
+ip ssh version 2
+line vty 0 4
+trans input ssh
+login local
+username admin password cisco
+
+!Acceso
+enable pass cisco
+
+!Seguridad de puertos
+interface g1/0/3
+switchport port-security
+switchport port-security mac-address 0001.97E0.D088
+switchport port-security violation shutdown
+interface g1/0/7
+switchport port-security
+switchport port-security mac-address 0060.5C69.D33C
+switchport port-security violation shutdown
+interface g1/0/13
+switchport port-security
+switchport port-security mac-address 0030.F2A4.20A3
+switchport port-security violation shutdown
+

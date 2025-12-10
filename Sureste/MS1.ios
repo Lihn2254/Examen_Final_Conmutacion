@@ -1,0 +1,137 @@
+! Switch MS1
+enable 
+configure terminal
+hostname MS1
+
+vtp mode server
+vtp domain juanmark.com
+
+ip domain-name juanmark.com
+crypto key generate rsa
+2048
+ip ssh version 2
+line vty 0 4
+trans input ssh
+login local
+username admin password cisco
+
+!Acceso
+enable pass cisco
+
+vlan 65
+ name VENTAS
+vlan 66
+ name TI
+vlan 67
+ name COMPRAS
+vlan 68
+ name MKT
+
+ip route 0.0.0.0 0.0.0.0 148.60.69.2
+
+ip dhcp pool NATIVA
+ network 148.60.64.0 255.255.255.0
+ default-router 148.60.64.1
+
+ip dhcp pool VENTAS
+ network 148.60.65.0 255.255.255.0
+ default-router 148.60.65.1
+
+ip dhcp pool TI
+ network 148.60.66.0 255.255.255.0
+ default-router 148.60.66.1
+
+ip dhcp pool COMPRAS
+ network 148.60.67.0 255.255.255.0
+ default-router 148.60.67.1
+
+ip dhcp pool MKT
+ network 148.60.68.0 255.255.255.0
+ default-router 148.60.68.1
+
+ip dhcp excluded-address 148.60.64.1 148.60.64.20
+ip dhcp excluded-address 148.60.65.1 148.60.65.5
+ip dhcp excluded-address 148.60.66.1 148.60.66.5
+ip dhcp excluded-address 148.60.67.1 148.60.67.5
+ip dhcp excluded-address 148.60.68.1 148.60.68.5
+
+spanning-tree mode rapid-pvst
+spanning-tree vlan 65,64,66 priority 4096
+spanning-tree vlan 67,68 priority 8192
+
+ip routing
+interface vlan 1
+ ip address 148.60.64.2 255.255.255.0
+ standby 1 ip 148.60.64.1
+ standby 1 priority 110
+ standby 1 preempt
+
+interface vlan 65
+ ip address 148.60.65.2 255.255.255.0
+ standby 65 ip 148.60.65.1
+ standby 65 priority 110
+ standby 65 preempt
+
+interface vlan 66
+ ip address 148.60.66.2 255.255.255.0
+ standby 66 ip 148.60.66.1
+ standby 66 priority 110
+ standby 66 preempt
+
+interface vlan 67
+ ip address 148.60.67.2 255.255.255.0
+ standby 67 ip 148.60.67.1
+ standby 67 priority 110
+ standby 67 preempt
+
+interface vlan 68
+ ip address 148.60.68.2 255.255.255.0
+ standby 68 ip 148.60.68.1
+ standby 68 priority 110
+ standby 68 preempt
+
+interface g1/0/1
+ no switchport
+ ip address 148.60.69.1 255.255.255.252
+
+! Para EtherChannel1
+interface range g1/0/2 - 3
+ channel-group 1 mode active
+
+interface port-channel 1
+ switchport mode trunk
+ switchport nonegotiate
+ switchport trunk allowed vlan 1,65,66,67,68
+
+interface g1/0/4
+ switchport mode trunk
+ switchport nonegotiate
+ switchport trunk allowed vlan 1,65,66,67,68
+
+interface g1/0/5
+ switchport mode trunk
+ switchport nonegotiate
+ switchport trunk allowed vlan 1,65,66,67,68
+
+! Para EtherChannel2
+interface range g1/0/6 - 7
+ channel-group 2 mode active
+
+interface port-channel 2
+ switchport mode trunk
+ switchport nonegotiate
+ switchport trunk allowed vlan 1,65,66,67,68
+
+! Para EtherChannel3
+interface range g1/0/8 - 9
+ channel-group 3 mode active
+
+interface port-channel 3
+ switchport mode trunk
+ switchport nonegotiate 
+ switchport trunk allowed vlan 1,65,66,67,68
+
+interface g1/0/24
+ switchport mode trunk
+ switchport nonegotiate
+ switchport trunk allowed vlan 1,65,66,67,68
