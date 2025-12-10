@@ -1,0 +1,75 @@
+!---------------------------------
+!ROUTER CENTRO
+!---------------------------------
+
+!Conexión con Switch Multicapa
+interface g0/0
+ip address 148.60.38.1 255.255.255.252
+no shutdown
+!Conexión con Sureste
+interface g0/1
+ip address 148.60.200.1 255.255.255.252
+no shutdown
+!Conexión con Noroeste
+interface g0/2
+ip address 148.60.200.5 255.255.255.252
+no shutdown
+!Conexión con Noreste
+interface s0/0/0
+ip address 148.60.200.13 255.255.255.252
+no shutdown
+exit
+
+!Configuración DHCP
+ip dhcp excluded-address 148.60.33.1 148.60.33.4
+ip dhcp excluded-address 148.60.34.1 148.60.34.2
+ip dhcp excluded-address 148.60.35.1
+ip dhcp excluded-address 148.60.36.1
+ip dhcp excluded-address 148.60.37.1
+
+ip dhcp pool TI
+network 148.60.33.0 255.255.255.0
+default-router 148.60.33.1
+
+ip dhcp pool WLAN
+network 148.60.34.0 255.255.255.0
+default-router 148.60.34.1
+
+ip dhcp pool VENTAS
+network 148.60.35.0 255.255.255.0
+default-router 148.60.35.1
+
+ip dhcp pool COMPRAS
+network 148.60.36.0 255.255.255.0
+default-router 148.60.36.1
+
+ip dhcp pool PRACTICANTE
+network 148.60.37.0 255.255.255.0
+default-router 148.60.37.1
+exit
+
+!Ruteo estático para VLANs
+ip route 148.60.32.0 255.255.248.0 148.60.38.2
+
+!Ruteo dinámico RIP
+router rip
+no auto-summary
+version 2
+redistribute static
+network 148.60.0.0
+exit
+
+!SSH
+hostname CENTRO
+ip domain-name juanmark.com
+crypto key generate rsa
+2048
+ip ssh version 2
+line vty 0 4
+trans input ssh
+login local
+username admin password cisco
+
+!Acceso
+enable password cisco
+

@@ -1,0 +1,109 @@
+!---------------------------------
+! MS0
+!---------------------------------
+!Servidor VTP
+vtp mode server
+vtp domain juanmark.com
+
+!Creación de VLANs
+vlan 33
+name TI
+vlan 34
+name WLAN
+vlan 35
+name VENTAS
+vlan 36
+name COMPRAS
+vlan 37
+name PRACTICANTE
+exit
+
+!Ether-channel
+int range g1/0/2-3
+channel-group 1 mode active
+
+int port-channel 1
+sw mo tr
+sw tr native vlan 34
+sw tr all vlan 33-37
+sw nonegotiate
+
+!Habilitar routing
+ip routing
+
+int g1/0/1
+no sw
+ip add 148.60.38.2 255.255.255.0
+
+!Puertos trunk
+int g1/0/4
+sw mo tr
+sw tr native vlan 34
+sw tr all vlan 33-37
+sw nonegotiate
+
+int g1/0/6
+sw mo tr
+sw tr native vlan 34
+sw tr all vlan 33-37
+sw nonegotiate
+
+!Creación de interfaces para default gateway, y helper address para DHCP
+int vlan 33
+ip add 148.60.33.1 255.255.255.0
+ip helper-address 148.60.38.1
+
+int vlan 34
+ip add 148.60.34.1 255.255.255.0
+ip helper-address 148.60.38.1
+
+int vlan 35
+ip add 148.60.35.1 255.255.255.0
+ip helper-address 148.60.38.1
+
+int vlan 36
+ip add 148.60.36.1 255.255.255.0
+ip helper-address 148.60.38.1
+
+int vlan 37
+ip add 148.60.37.1 255.255.255.0
+ip helper-address 148.60.38.1
+
+!Puertos de acceso
+int g1/0/5
+sw mo acc
+sw acc vlan 33
+
+int range g1/0/7-10
+sw mo acc
+sw acc vlan 34
+
+int range g1/0/11-15
+sw mo acc
+sw acc vlan 35
+
+int range g1/0/16-20
+sw mo acc
+sw acc vlan 36
+
+int range g1/0/21-24
+sw mo acc
+sw acc vlan 37
+exit
+
+!SSH
+hostname MS0
+ip domain-name juanmark.com
+crypto key generate rsa
+2048
+ip ssh version 2
+line vty 0 4
+trans input ssh
+login local
+username admin password cisco
+
+!Acceso
+enable pass cisco
+
+!Ruteo por default para salir de la red
+ip route 0.0.0.0 0.0.0.0 148.60.38.1
