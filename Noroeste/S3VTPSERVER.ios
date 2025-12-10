@@ -1,0 +1,90 @@
+! S3VTPSERVER
+
+
+enable
+configure terminal
+hostname S3VTPSERVER
+
+!Creacion VLANs
+vlan 9
+name GestionDeTI
+vlan 5
+name MKT
+vlan 6
+name Ventas
+vlan 7
+name Compras
+
+!Asignar puertos a VLANs
+interface range fa0/3 - 6
+switchport mode access
+switchport access vlan 9
+interface range fa0/7 - 12
+switchport mode access
+switchport access vlan 5
+interface range fa0/13 - 18
+switchport mode access
+switchport access vlan 6
+interface range fa0/19 - 24
+switchport mode access
+switchport access vlan 7
+
+!VTP SERVER
+vtp mode server
+vtp domain juanmark.com
+vtp version 2
+
+!Switchport modo Trunk (enlace hacia S3VTPSERVER)
+
+interface fa0/1
+switchport mode trunk
+switchport trunk allowed vlan 5,6,7,9
+
+interface fa0/2
+switchport mode trunk
+switchport trunk allowed vlan 5,6,7,9
+
+
+!SSH
+
+interface vlan 9 
+ip add 148.60.9.5 255.255.255.0
+no shut
+
+ip default gateway 148.60.9.1 255.255.255.0
+
+
+ip domain-name juanmark.com
+crypto key generate rsa
+2048
+ip ssh version 2
+line vty 0 4
+trans input ssh
+login local
+username admin password cisco
+
+!Acceso
+enable pass cisco
+
+!STP Root de VLAN 5
+spanning-tree vlan 5 root primary
+show spanning-tree vlan 5
+
+!Seguridad de puertos
+!MKT
+interface f0/7
+switchport port-security
+switchport port-security mac-address 0002.4A34.E391
+switchport port-security violation shutdown
+
+!Compras
+interface f0/19
+switchport port-security
+switchport port-security mac-address 0000.0C5B.DDA8
+switchport port-security violation shutdown
+
+!Ventas
+interface f0/13
+switchport port-security
+switchport port-security mac-address 0005.5EAC.1BCE
+switchport port-security violation shutdown

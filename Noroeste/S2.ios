@@ -1,0 +1,65 @@
+! S2
+
+enable
+configure terminal
+hostname S2
+
+!VTP Client (enlace hacia S3VTPSERVER)
+vtp mode client
+vtp domain juanmark.com
+vtp version 2
+
+!Switchport modo Trunk (enlace hacia S3VTPSERVER)
+interface GigabitEthernet0/1    
+switchport mode trunk
+switchport trunk allowed vlan 5,6,7,9
+
+interface fa0/1
+switchport mode trunk
+switchport trunk allowed vlan 5,6,7,9
+
+interface fa0/2
+switchport mode trunk
+switchport trunk allowed vlan 5,6,7,9
+
+!Switchport modo Access (dispositivos finales)
+! Puerto de Admin 
+interface fa0/3
+switchport mode access
+switchport access vlan 9
+
+
+!SSH
+
+interface vlan 9 
+ip add 148.60.9.4 255.255.255.0
+no shut
+
+ip default gateway 148.60.9.1 255.255.255.0
+
+
+ip domain-name juanmark.com
+crypto key generate rsa
+2048
+ip ssh version 2
+line vty 0 4
+trans input ssh
+login local
+username admin password cisco
+
+!Acceso
+enable pass cisco
+
+
+!STP Root de VLAN 9
+spanning-tree vlan 9 root primary
+show spanning-tree vlan 9
+
+
+!Seguridad de puertos
+!Admin
+interface f0/3
+switchport port-security
+switchport port-security mac-address 0060.5C2E.C473
+switchport port-security violation shutdown
+
