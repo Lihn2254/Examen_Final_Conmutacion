@@ -16,34 +16,45 @@ switchport nonegotiate
 switchport mode trunk 
 switchport trunk allowed vlan 97,98,99, 
 
+ip routing
+interface vlan 97
+ip add 148.60.97.6 255.255.255.0
+no shut
+
+interface vlan 98
+ip add 148.60.98.6 255.255.255.0
+no shut
+
+interface vlan 99
+ip add 148.60.99.6 255.255.255.0
+no shut
+
+interface vlan 100
+ip add 148.60.100.6 255.255.255.0
+
 !HSRP
 int vlan 97
-standby 97 ip 148.60.97.5
-standby 97 priority 105
+standby 97 ip 148.60.97.1
+standby 97 priority 90
 standby 97 preempt
-standby 97 track GIgabitEthernet1/0/1
 no shut
 int vlan 98
-standby 98 ip 148.60.98.5
-standby 98 priority 105
+standby 98 ip 148.60.98.1
+standby 98 priority 90
 standby 98 preempt
-standby 98 track GIgabitEthernet1/0/1
 no shut
 int vlan 99
-standby 99 ip 148.60.99.5
-standby 99 priority 105
+standby 99 ip 148.60.99.1
+standby 99 priority 90
 standby 99 preempt
-standby 99 track GIgabitEthernet1/0/1
 no shut
 int vlan 100
-standby 100 ip 148.60.100.5
-standby 100 priority 105
+standby 100 ip 148.60.100.1
+standby 100 priority 90
 standby 100 preempt
-standby 100 track GIgabitEthernet1/0/1
 no shut
 
 !SSH
-
 interface vlan 97 
 ip add 148.60.97.6 255.255.255.0
 no shut
@@ -58,7 +69,7 @@ login local
 username admin password cisco
 
 !Acceso
-enable pass cisco
+enable pass cisco
 
 !Seguridad de puertos
 interface g1/0/4

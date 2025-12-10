@@ -62,19 +62,19 @@ default-router 148.60.100.1
 
 ip routing
 interface vlan 97
-ip add 148.60.97.1 255.255.255.0
+ip add 148.60.97.5 255.255.255.0
 no shut
 
 interface vlan 98
-ip add 148.60.98.1 255.255.255.0
+ip add 148.60.98.5 255.255.255.0
 no shut
 
 interface vlan 99
-ip add 148.60.99.1 255.255.255.0
+ip add 148.60.99.5 255.255.255.0
 no shut
 
 interface vlan 100
-ip add 148.60.100.1 255.255.255.0
+ip add 148.60.100.5 255.255.255.0
 
 ip dhcp excluded-address 148.60.98.10
 ip dhcp excluded-address 148.60.97.2
@@ -89,25 +89,21 @@ spanning-tree vlan 97,98,99,100 root primary
 
  !HSRP
 int vlan 97
-standby 97 ip 148.60.97.5
-standby 97 priority 105
+standby 97 ip 148.60.97.1
+standby 97 priority 110
 standby 97 preempt
-standby 97 track GIgabitEthernet1/0/1
 int vlan 98
-standby 98 ip 148.60.98.5
-standby 98 priority 105
+standby 98 ip 148.60.98.1
+standby 98 priority 110
 standby 98 preempt
-standby 98 track GIgabitEthernet1/0/1
 int vlan 99
-standby 99 ip 148.60.99.5
-standby 99 priority 105
+standby 99 ip 148.60.99.1
+standby 99 priority 110
 standby 99 preempt
-standby 99 track GIgabitEthernet1/0/1
 int vlan 100
-standby 100 ip 148.60.100.5
-standby 100 priority 105
+standby 100 ip 148.60.100.1
+standby 100 priority 110
 standby 100 preempt
-standby 100 track GIgabitEthernet1/0/1
 
 !SSH
 
@@ -117,6 +113,7 @@ no shut
 
 ip domain-name juanmark.com
 crypto key generate rsa
+no
 2048
 ip ssh version 2
 line vty 0 4
@@ -125,7 +122,7 @@ login local
 username admin password cisco
 
 !Acceso
-enable pass cisco
+enable pass cisco
 
 router rip
  version 2
