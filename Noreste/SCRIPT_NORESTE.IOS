@@ -11,6 +11,7 @@ interface g0/1
 ip add 148.60.101.5 255.255.255.252
 no shut
 
+!SSH
 ip domain-name juanmark.com
 crypto key generate rsa
 2048
@@ -170,11 +171,11 @@ enable pass cisco
 interface g1/0/13
 switchport port-security
 switchport port-security mac-address 00D0.FF99.10D5
-switchport port-security violation shutdown
+switchport port-security violation shutdown
 interface g1/0/19
 switchport port-security
 switchport port-security mac-address 00D0.5861.E754
-switchport port-security violation shutdown
+switchport port-security violation shutdown
 
 ! MS2
 enable
@@ -310,8 +311,6 @@ router rip
  network 148.60.0.0
  no auto-summary
 
-
-
 ! MS3
 enable
 configure terminal
@@ -355,7 +354,6 @@ standby 100 priority 105
 standby 100 preempt
 standby 100 track GIgabitEthernet1/0/1
 no shut
-
 
 !SSH
 
